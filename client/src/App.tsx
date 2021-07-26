@@ -40,7 +40,7 @@ export default function App() {
             url: '/trades/date/' + data.date
           })
           .then(function (response) {
-            if (response.data.length == 0) {
+            if (response.data[0].client_id=="pass") {
               const results = document.getElementById("results")
               const query_label = document.createElement("p")
               query_label.id = "query-label"
@@ -101,11 +101,12 @@ export default function App() {
           .then(function (response) {
             const results = document.getElementById("results")
             
-            if (response.data.length == 0) {
+            // console.log(response.data[0].client_id)
+            if (response.data[0].client_id=="pass") {
               const results = document.getElementById("results")
               const query_label = document.createElement("p")
               query_label.id = "query-label"
-              query_label.textContent = "No failed GTT results for " + data.date
+              query_label.textContent = "No failed GTT results for " + data.tradeid
               results?.appendChild(query_label);
             } else {
             const query_label = document.createElement("p")
@@ -159,7 +160,7 @@ export default function App() {
               const results = document.getElementById("results")
               const query_label = document.createElement("p")
               query_label.id = "query-label"
-              query_label.textContent = "No failed GTT results for " + data.date
+              query_label.textContent = "No failed GTT results for " + data.clientid
               results?.appendChild(query_label);
             } else {
               const results = document.getElementById("results")
@@ -205,7 +206,7 @@ export default function App() {
         else {
           const results = document.getElementById("results")
           const p = document.createElement("p")
-          p.textContent = "Please enter data into ONE search field."
+          p.textContent = "Please enter data into ONE search field with the correct query format."
           results?.appendChild(p);
         }
 
