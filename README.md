@@ -10,11 +10,13 @@ pip install fastapi
 ```
 * Start frontend (default port is 3000)
 ```.bash
+cd ./client
 npm install
 npm start
 ```
 * React app is running at http://localhost:3000
 * Start backend data processor
 ```.bash
+cd ../json-server
 uvicorn gtt_check:api --reload --port 8000
 ```
