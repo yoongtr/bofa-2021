@@ -8,7 +8,6 @@ export default ({
   description?: string;
 }) => (
   <>
-    <span className="counter">Render Count: {renderCount}</span>
     <h1 className="h1">
       <svg
         width="40px"

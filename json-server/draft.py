@@ -12,7 +12,7 @@ trades = [{'regulatoryReportingDetails': {'counterpartyID': 'CLIENT-TEQ17', 'rep
 {'regulatoryReportingDetails': {'counterpartyID': 'CLIENT-9YL14', 'reportingCounterpartyID': 'FNB-UK'}, 'date': '20210609', 'tradeID': 'P4U28LL7BV-10007', 'reportingSide': 'FIRM', 'regulation': 'SFT_REPORTING', 'jurisdiction': 'SG', 'securitiesFinancingTransactionType': 'SECURITIES_LENDING'}, 
 {'regulatoryReportingDetails': {'counterpartyID': 'CLIENT-WXS11', 'reportingCounterpartyID': 'FNB-EU'}, 'date': '20210610', 'tradeID': 'YM76FS1AQT-10008', 'reportingSide': 'CLIENT', 'regulation': 'SFT_REPORTING', 'jurisdiction': 'EU', 'securitiesFinancingTransactionType': 'MARGIN_LENDING'}, 
 {'regulatoryReportingDetails': {'counterpartyID': 'CLIENT-MFC15', 'reportingCounterpartyID': 'FNB-UK'}, 'date': '20210610', 'tradeID': 'P98ICK2EYR-10009', 'reportingSide': 'FIRM', 'regulation': 'SFT_REPORTING', 'jurisdiction': 'SG', 'securitiesFinancingTransactionType': 'SECURITIES_LENDING'}]
-print(len(trades))
+# print(len(trades))
 # trades_by_date = []
 
 # for dt, k in groupby(sorted(trades,key=itemgetter('date')),key=itemgetter('date')):
@@ -25,15 +25,22 @@ print(len(trades))
 #     trades_by_date.append(d)
 
 # print(trades_by_date)
-meet_criteria = []
-for item in trades:
-    if (item["regulation"]=="SFT_REPORTING" 
-        and item["reportingSide"]=="FIRM"
-        and item["jurisdiction"] in ["UK","EU"]
-        and item["securitiesFinancingTransactionType"] in ["SECURITIES_LENDING", "REPURCHASE", "MARGIN_LENDING", "BUY_BACK"]
-        and item["regulatoryReportingDetails"]["reportingCounterpartyID"] in ["FNB-UK", "FNB-EU"]
-        ):
-        meet_criteria.append(item)
+# meet_criteria = []
+# for item in trades:
+#     if (item["regulation"]=="SFT_REPORTING" 
+#         and item["reportingSide"]=="FIRM"
+#         and item["jurisdiction"] in ["UK","EU"]
+#         and item["securitiesFinancingTransactionType"] in ["SECURITIES_LENDING", "REPURCHASE", "MARGIN_LENDING", "BUY_BACK"]
+#         and item["regulatoryReportingDetails"]["reportingCounterpartyID"] in ["FNB-UK", "FNB-EU"]
+#         ):
+#         meet_criteria.append(item)
 
-print(meet_criteria)
-print(len(meet_criteria))
+# print(meet_criteria)
+# print(len(meet_criteria))
+import json
+myd = {}
+for i in trades:
+    line_dict = i
+    myd.add(line_dict)
+
+print(myd)

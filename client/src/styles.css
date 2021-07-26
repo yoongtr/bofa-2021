@@ -110,3 +110,53 @@ button[type="button"]:hover {
   background: #bf1650;
   color: white;
 }
+
+#result-box {
+  overflow: overlay;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid white;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background-color: white;
+  color: #233a75;
+}
+
+#query-label {
+  overflow: overlay;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+}
+
+#query-error {
+  overflow: overlay;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid white;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background-color: rgb(206, 157, 137);
+  color: #233a75;
+  font-size: 150%;
+}
+
+#result-header {
+  overflow: overlay;
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  border-radius: 4px;
+  border: 1px solid white;
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  background-color: rgb(223, 134, 93);
+  color: #233a75;
+}

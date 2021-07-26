@@ -1,4 +1,4 @@
-# USAGE: uvicorn gtt_check:api --reload --port 3000
+# USAGE: uvicorn gtt_check:api --reload --port 8000
 import json
 import typer
 from fastapi import FastAPI
@@ -9,8 +9,6 @@ trade_data = "gtt_trade_data.json"
 api_data = "gtt_api_data.json"
 
 # Case query by date
-
-
 def query_date(input_date: str, trade_data: str, apis):
     
     trades_by_date = [] # All trades from the given date query
@@ -24,10 +22,27 @@ def query_date(input_date: str, trade_data: str, apis):
     
     failed_gtt = gtt_check(trades_by_date, apis, "case_date")
 
-    return failed_gtt
+    displayed = {}
+    for item in failed_gtt:
+        displayed.update({item.get("client_id") : {item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID") : {"docs":set(), "trades":[]}}})
+    
+    for item in failed_gtt:
+        entity = item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID")
+        displayed[item.get("client_id")][entity]["docs"].add(item.get("api_details").get("documentId"))
+        displayed[item.get("client_id")][entity]["trades"].append(item.get("trade_details").get("tradeID"))
+    # print(displayed)
+    
+    displayed_json = []
+    for key, val in displayed.items():
+        for k,v in val.items():
+            displayed_json.append({"clientid": key,
+                                    "fnb_entity": k,
+                                    "docs": v["docs"],
+                                    "trades": v["trades"]})
+
+    return displayed_json #displayed
 
 # Case query by tradeID
-
 def query_tradeid(trade_id: str, trade_data: str, apis):
     
     trades_by_tradeid = []
@@ -37,14 +52,19 @@ def query_tradeid(trade_id: str, trade_data: str, apis):
             line_dict = json.loads(line)
             if line_dict.get("tradeID") == trade_id:
                 trades_by_tradeid.append(line_dict)
-    # print(trades_by_tradeid)
     
     failed_gtt = gtt_check(trades_by_tradeid, apis, "case_tradeid")
 
-    return failed_gtt 
+    displayed = {}
+    failed_trade = failed_gtt[0]
+    displayed.update({"client_id" : failed_trade.get("client_id"),
+                    "fnb_entity": failed_trade.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID"), 
+                    "docs": failed_trade.get("api_details").get("documentId"),
+                    "trade_id": failed_trade.get("trade_details").get("tradeID")})
+    
+    return [displayed]
 
 # Case query by clientID
-
 def query_clientid(client_id: str, trade_data: str, apis):
 
     trades_by_clientid = []
@@ -55,14 +75,26 @@ def query_clientid(client_id: str, trade_data: str, apis):
             if line_dict.get("regulatoryReportingDetails").get("counterpartyID") == client_id:
                 trades_by_clientid.append(line_dict)
     
-    # print(trades_by_clientid)
-    
     failed_gtt = gtt_check(trades_by_clientid, apis, "case_clientid")
 
-    return failed_gtt
+    # need to show entity id
+    displayed = {}
+    for item in failed_gtt:
+        displayed.update({item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID"): {"docs": set(), "trades":[]}})
+    
+    for item in failed_gtt:
+        displayed[item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID")]["docs"].add(item.get("api_details").get("documentId"))
+        displayed[item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID")]["trades"].append(item.get("trade_details").get("tradeID"))
+    
+    displayed_json = []
+    for key, val in displayed.items():
+        displayed_json.append({"fnb_entity": key,
+                                "docs": val["docs"],
+                                "trades": val["trades"]})
 
-# GTT check based on given criteria
+    return displayed_json
 
+# GTT check, return all details of trades and apis that failed GTT
 def gtt_check(trades_to_check, apis, query_case):
     # Check only trades meeting criteria
     meet_criteria = []
@@ -74,7 +106,6 @@ def gtt_check(trades_to_check, apis, query_case):
             and item["regulatoryReportingDetails"]["reportingCounterpartyID"] in ["FNB-UK", "FNB-EU"]
             ):
             meet_criteria.append(item)
-    # print(len(meet_criteria), meet_criteria)
 
     failed_gtt = []
     for item in meet_criteria:
@@ -87,13 +118,9 @@ def gtt_check(trades_to_check, apis, query_case):
                                     "trade_details" : item,
                                     "api_details": i})
 
-    if query_case == "case_date": #to_add
-        pass
-
     return failed_gtt
 
 # Main function
-
 def run_app(query_case, query_key):
     data = {"apis": {},
             "trades": {}}
@@ -118,6 +145,28 @@ def run_app(query_case, query_key):
 def api_integrate(query_case: str, query_key: str):
     return run_app(query_case, query_key)
 
+
+
+@api.get("/trades")
+def read_trades():
+    trades = []
+    with open(f"{trade_data}", 'r') as f:
+        for line in f.readlines():
+            line_dict = json.loads(line)
+            trades.append(line_dict)
+    return trades
+
+@api.get("/apis")
+def read_apis():
+    apis = {}
+    with open(f"{api_data}", 'r') as f:
+        for line in f.readlines():
+            line_dict = json.loads(line)
+            apis.update(line_dict)
+    return apis
+
+
 if __name__ == "__main__":
     # app()
+    # run_app("date","20210607")
     pass
