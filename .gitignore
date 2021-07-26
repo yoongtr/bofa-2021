@@ -37,9 +37,9 @@ ehthumbs.db
 Thumbs.db
 
 # Misc files
-json-server/draft.py
-json-server/gtt_api_data_small.json
-json-server/gtt_trade_data_small.json
-json-server/gtt_merged_data.json
-json-server/sample_query_from_cli.json
-json-server/test.txt
+# json-server/draft.py
+# json-server/gtt_api_data_small.json
+# json-server/gtt_trade_data_small.json
+# json-server/gtt_merged_data.json
+# json-server/sample_query_from_cli.json
+# json-server/test.txt
