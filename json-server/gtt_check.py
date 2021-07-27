@@ -37,53 +37,57 @@ def query_date(input_date: str, trades, apis):
         if item.get("date") == input_date:
             trades_by_date.append(item)
     
-    failed_gtt = gtt_check(trades_by_date, apis, "case_date")
-    if len(failed_gtt)==0:
-        displayed_json = [{"client_id":"pass"}]
+    if len(trades_by_date) == 0: # Query key not found in database
+        return [{"date":"nonexist"}]
     else:
-        displayed = {}
-        for item in failed_gtt:
-            displayed.update({item.get("client_id") : {item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID") : {"docs":set(), "trades":[]}}})
-        
-        for item in failed_gtt:
-            entity = item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID")
-            displayed[item.get("client_id")][entity]["docs"].add(item.get("api_details").get("documentId"))
-            displayed[item.get("client_id")][entity]["trades"].append(item.get("trade_details").get("tradeID"))
-        # print(displayed)
-        
-        displayed_json = []
-        for key, val in displayed.items():
-            for k,v in val.items():
-                displayed_json.append({"clientid": key,
-                                        "fnb_entity": k,
-                                        "docs": v["docs"],
-                                        "trades": v["trades"]})
-
-    return displayed_json 
+        failed_gtt = gtt_check(trades_by_date, apis, "case_date")
+        if len(failed_gtt)==0: # Query date pass all GTT
+            displayed_json = [{"date":"pass"}]
+        else:
+            displayed = {}
+            for item in failed_gtt:
+                displayed.update({item.get("client_id") : {item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID") : {"docs":set(), "trades":[]}}})
+            
+            for item in failed_gtt:
+                entity = item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID")
+                displayed[item.get("client_id")][entity]["docs"].add(item.get("api_details").get("documentId"))
+                displayed[item.get("client_id")][entity]["trades"].append(item.get("trade_details").get("tradeID"))
+            # print(displayed)
+            
+            displayed_json = []
+            for key, val in displayed.items():
+                for k,v in val.items():
+                    displayed_json.append({"clientid": key,
+                                            "fnb_entity": k,
+                                            "docs": v["docs"],
+                                            "trades": v["trades"]})
+        return trades_by_date 
 
 # Case query by tradeID
 def query_tradeid(trade_id: str, trades, apis):
     
-    trades_by_tradeid = []
+    trades_by_tradeid = [] # All trades from the given tradeid query
     
     for item in trades:
         if item.get("tradeID") == trade_id:
             trades_by_tradeid.append(item)
 
-    failed_gtt = gtt_check(trades_by_tradeid, apis, "case_tradeid")
-
-    displayed = {}
-    if len(failed_gtt)==0:
-        displayed = [{"client_id":"pass"}]
+    if len(trades_by_tradeid) == 0: # Query key not found in database
+        return [{"tradeid":"nonexist"}]
     else:
-        failed_trade = failed_gtt[0]
-        displayed.update({"client_id" : failed_trade.get("client_id"),
-                        "fnb_entity": failed_trade.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID"), 
-                        "docs": failed_trade.get("api_details").get("documentId"),
-                        "trade_id": failed_trade.get("trade_details").get("tradeID")})
-        displayed = [displayed]
+        failed_gtt = gtt_check(trades_by_tradeid, apis, "case_tradeid")
 
-    return displayed
+        displayed = {}
+        if len(failed_gtt)==0: # Query tradeid pass all GTT
+            displayed = [{"tradeid":"pass"}]
+        else:
+            failed_trade = failed_gtt[0]
+            displayed.update({"client_id" : failed_trade.get("client_id"),
+                            "fnb_entity": failed_trade.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID"), 
+                            "docs": failed_trade.get("api_details").get("documentId"),
+                            "trade_id": failed_trade.get("trade_details").get("tradeID")})
+            displayed = [displayed]
+        return displayed
 
 # Case query by clientID
 def query_clientid(client_id: str, trades, apis):
@@ -94,26 +98,28 @@ def query_clientid(client_id: str, trades, apis):
         if item.get("regulatoryReportingDetails").get("counterpartyID") == client_id:
             trades_by_clientid.append(item)
     
-    failed_gtt = gtt_check(trades_by_clientid, apis, "case_clientid")
-
-    if len(failed_gtt)==0:
-        displayed_json = [{"fnb_entity":"pass"}]
+    if len(trades_by_clientid) == 0: # Query key not found in database
+        return [{"clientid":"nonexist"}]
     else:
-        displayed = {}
-        for item in failed_gtt:
-            displayed.update({item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID"): {"docs": set(), "trades":[]}})
-        
-        for item in failed_gtt:
-            displayed[item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID")]["docs"].add(item.get("api_details").get("documentId"))
-            displayed[item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID")]["trades"].append(item.get("trade_details").get("tradeID"))
-        
-        displayed_json = []
-        for key, val in displayed.items():
-            displayed_json.append({"fnb_entity": key,
-                                    "docs": val["docs"],
-                                    "trades": val["trades"]})
+        failed_gtt = gtt_check(trades_by_clientid, apis, "case_clientid")
+        if len(failed_gtt)==0: # Query clientid pass all GTT
+            displayed_json = [{"clientid":"pass"}]
+        else:
+            displayed = {}
+            for item in failed_gtt:
+                displayed.update({item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID"): {"docs": set(), "trades":[]}})
+            
+            for item in failed_gtt:
+                displayed[item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID")]["docs"].add(item.get("api_details").get("documentId"))
+                displayed[item.get("trade_details").get("regulatoryReportingDetails").get("reportingCounterpartyID")]["trades"].append(item.get("trade_details").get("tradeID"))
+            
+            displayed_json = []
+            for key, val in displayed.items():
+                displayed_json.append({"fnb_entity": key,
+                                        "docs": val["docs"],
+                                        "trades": val["trades"]})
 
-    return displayed_json
+        return displayed_json
 
 # GTT check, return all details of trades and apis that failed GTT
 def gtt_check(trades_to_check, apis, query_case):

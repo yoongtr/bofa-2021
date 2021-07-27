@@ -37,13 +37,23 @@ export default function App() {
             url: '/trades/date/' + data.date
           })
           .then(function (response) {
-            if (response.data[0].client_id=="pass") {
+            if (response.data[0].date=="pass") {
               const results = document.getElementById("results")
               const query_label = document.createElement("p")
               query_label.id = "query-label"
               query_label.textContent = "No failed GTT results for " + data.date
               results?.appendChild(query_label);
-            } else {
+            } 
+
+            else if (response.data[0].date=="nonexist") {
+              const results = document.getElementById("results")
+              const query_label = document.createElement("p")
+              query_label.id = "query-label"
+              query_label.textContent = data.date + " does not exist in database."
+              results?.appendChild(query_label);
+            } 
+            
+            else {
               console.log(response.data)
               const results = document.getElementById("results")
               const query_label = document.createElement("p")
@@ -99,13 +109,23 @@ export default function App() {
             const results = document.getElementById("results")
             
             // console.log(response.data[0].client_id)
-            if (response.data[0].client_id=="pass") {
+            if (response.data[0].tradeid=="pass") {
               const results = document.getElementById("results")
               const query_label = document.createElement("p")
               query_label.id = "query-label"
               query_label.textContent = "No failed GTT results for " + data.tradeid
               results?.appendChild(query_label);
-            } else {
+            } 
+
+            else if (response.data[0].tradeid=="nonexist") {
+              const results = document.getElementById("results")
+              const query_label = document.createElement("p")
+              query_label.id = "query-label"
+              query_label.textContent = data.tradeid + " does not exist in database."
+              results?.appendChild(query_label);
+            } 
+
+            else {
             const query_label = document.createElement("p")
             query_label.id = "query-label"
             query_label.textContent = "Failed GTT details for TradeID: " + data.tradeid
@@ -153,13 +173,23 @@ export default function App() {
           url: '/trades/clientid/' + data.clientid
         })
           .then(function (response) {
-            if (response.data.length == 0) {
+            if (response.data[0].clientid == "pass") {
               const results = document.getElementById("results")
               const query_label = document.createElement("p")
               query_label.id = "query-label"
               query_label.textContent = "No failed GTT results for " + data.clientid
               results?.appendChild(query_label);
-            } else {
+            } 
+            
+            else if (response.data[0].clientid=="nonexist") {
+              const results = document.getElementById("results")
+              const query_label = document.createElement("p")
+              query_label.id = "query-label"
+              query_label.textContent = data.clientid + " does not exist in database."
+              results?.appendChild(query_label);
+            } 
+
+            else {
               const results = document.getElementById("results")
               
               const query_label = document.createElement("p")
