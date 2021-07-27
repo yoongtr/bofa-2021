@@ -160,3 +160,9 @@ button[type="button"]:hover {
   background-color: rgb(223, 134, 93);
   color: #233a75;
 }
+
+#centered {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

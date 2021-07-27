@@ -11,10 +11,8 @@ type FormValues = {
   clientid: string;
 };
 
-interface dateResults {
-  client: string;
-  docs: string;
-  trades: string
+function refresh(): void {
+  window.location.reload();
 }
 
 export default function App() {
@@ -30,7 +28,6 @@ export default function App() {
     <form
       onSubmit={handleSubmit((data) => {
         console.log(data);
-        var user_params = {};
         
         if (data.date!="" && data.clientid=="" && data.tradeid=="") {
           console.log(data.date)
@@ -214,7 +211,7 @@ export default function App() {
       })}
     >
       <Headers
-        description="Please enter data into only one of the search fields. Refresh the page to clear search results."
+        description="Please enter data into only one of the search fields."
       />
       <label htmlFor="date">Query by Date:</label>
       <input
@@ -241,7 +238,9 @@ export default function App() {
       />
 
       <input type="submit" />
-      
+      <div id="centered">
+        <button onClick={refresh}>Clear Results</button>
+      </div>
     </form>
     <div>
       <div id="results"> 
