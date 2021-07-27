@@ -8,17 +8,34 @@ api = FastAPI()
 trade_data = "gtt_trade_data.json"
 api_data = "gtt_api_data.json"
 
-# Case query by date
-def query_date(input_date: str, trade_data: str, apis):
-    
-    trades_by_date = [] # All trades from the given date query
+# Read JSON files
 
+@api.get("/trades")
+def read_trades(): # Trade data unique key is tradeid
+    trades = []
     with open(f"{trade_data}", 'r') as f:
         for line in f.readlines():
             line_dict = json.loads(line)
-            if line_dict.get("date") == input_date:
-                trades_by_date.append(line_dict)
-    # print(len(trades_by_date), trades_by_date)
+            trades.append(line_dict)
+    return trades
+
+@api.get("/apis")
+def read_apis(): # API data unique key is clientid
+    apis = {}
+    with open(f"{api_data}", 'r') as f:
+        for line in f.readlines():
+            line_dict = json.loads(line)
+            apis.update(line_dict)
+    return apis
+
+# Case query by date
+def query_date(input_date: str, trades, apis):
+    
+    trades_by_date = [] # All trades from the given date query
+
+    for item in trades:
+        if item.get("date") == input_date:
+            trades_by_date.append(item)
     
     failed_gtt = gtt_check(trades_by_date, apis, "case_date")
     if len(failed_gtt)==0:
@@ -45,16 +62,14 @@ def query_date(input_date: str, trade_data: str, apis):
     return displayed_json 
 
 # Case query by tradeID
-def query_tradeid(trade_id: str, trade_data: str, apis):
+def query_tradeid(trade_id: str, trades, apis):
     
     trades_by_tradeid = []
-
-    with open(f"{trade_data}", 'r') as f:
-        for line in f.readlines():
-            line_dict = json.loads(line)
-            if line_dict.get("tradeID") == trade_id:
-                trades_by_tradeid.append(line_dict)
     
+    for item in trades:
+        if item.get("tradeID") == trade_id:
+            trades_by_tradeid.append(item)
+
     failed_gtt = gtt_check(trades_by_tradeid, apis, "case_tradeid")
 
     displayed = {}
@@ -71,15 +86,13 @@ def query_tradeid(trade_id: str, trade_data: str, apis):
     return displayed
 
 # Case query by clientID
-def query_clientid(client_id: str, trade_data: str, apis):
+def query_clientid(client_id: str, trades, apis):
 
     trades_by_clientid = []
 
-    with open(f"{trade_data}", 'r') as f:
-        for line in f.readlines():
-            line_dict = json.loads(line)
-            if line_dict.get("regulatoryReportingDetails").get("counterpartyID") == client_id:
-                trades_by_clientid.append(line_dict)
+    for item in trades:
+        if item.get("regulatoryReportingDetails").get("counterpartyID") == client_id:
+            trades_by_clientid.append(item)
     
     failed_gtt = gtt_check(trades_by_clientid, apis, "case_clientid")
 
@@ -130,48 +143,24 @@ def gtt_check(trades_to_check, apis, query_case):
 
 # Main function
 def run_app(query_case, query_key):
-    data = {"apis": {},
-            "trades": {}}
 
-    # API data table unique key is clientid
-    with open(f"{api_data}", 'r') as f:
-        for line in f.readlines():
-            line_dict = json.loads(line)
-            data["apis"].update(line_dict)
+    data = {"apis": read_apis(),
+            "trades": read_trades()}
 
     # Check which query case and call appropriate query function
     if query_case=="date":
-        result = query_date(query_key, trade_data, data["apis"])
+        result = query_date(query_key, data["trades"], data["apis"])
     elif query_case=="tradeid":
-        result = query_tradeid(query_key, trade_data, data["apis"])
+        result = query_tradeid(query_key, data["trades"], data["apis"])
     elif query_case=="clientid":
-        result = query_clientid(query_key, trade_data, data["apis"])
+        result = query_clientid(query_key, data["trades"], data["apis"])
 
     return result
 
+# FastAPI route to main function
 @api.get("/trades/{query_case}/{query_key}")
 def api_integrate(query_case: str, query_key: str):
     return run_app(query_case, query_key)
-
-
-
-@api.get("/trades")
-def read_trades():
-    trades = []
-    with open(f"{trade_data}", 'r') as f:
-        for line in f.readlines():
-            line_dict = json.loads(line)
-            trades.append(line_dict)
-    return trades
-
-@api.get("/apis")
-def read_apis():
-    apis = {}
-    with open(f"{api_data}", 'r') as f:
-        for line in f.readlines():
-            line_dict = json.loads(line)
-            apis.update(line_dict)
-    return apis
 
 
 if __name__ == "__main__":
