@@ -61,7 +61,7 @@ def query_date(input_date: str, trades, apis):
                                             "fnb_entity": k,
                                             "docs": v["docs"],
                                             "trades": v["trades"]})
-        return trades_by_date 
+        return displayed_json 
 
 # Case query by tradeID
 def query_tradeid(trade_id: str, trades, apis):

@@ -244,10 +244,12 @@ export default function App() {
         description="Please enter data into only one of the search fields."
       />
       <label htmlFor="date">Query by Date:</label>
-      <input
+      <input 
         {...register("date", { 
-          maxLength: { value: 8, message: "Input date as YYYYMMDD." }
-        })}
+          maxLength: { value: 8, message: "Input date as YYYYMMDD." },
+          minLength: { value: 8, message: "Input date as YYYYMMDD." },
+        }
+        )}
         id="date"
         placeholder="YYYYMMDD e.g. 20210607"
       />
